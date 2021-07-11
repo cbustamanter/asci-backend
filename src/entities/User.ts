@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from "type-graphql";
-import { BaseEntity, Column, Entity } from "typeorm";
+import { BaseEntity, Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import { Course } from "./Course";
 import { EntityWithBase, EntityWithDates } from "./mixins/EntityManager";
 
 @ObjectType()
@@ -39,4 +40,9 @@ export class User extends EntityWithDates(EntityWithBase(BaseEntity)) {
   @Field(() => String)
   @Column()
   country: string;
+
+  @Field(() => [Course], { nullable: true })
+  @ManyToMany(() => Course)
+  @JoinTable()
+  courses?: Course[];
 }

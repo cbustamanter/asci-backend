@@ -7,4 +7,6 @@ export class PaginatedUsers {
   users: User[];
   @Field()
   hasMore: boolean;
+  // @Field()
+  // hasLess: boolean;
 }

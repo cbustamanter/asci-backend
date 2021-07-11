@@ -12,7 +12,8 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { getConnection } from "typeorm";
-import { COOKIE_NAME } from "../constants";
+import { v4 } from "uuid";
+import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from "../constants";
 import { User } from "../entities/User";
 import { isAuth } from "../middlewares/isAuth";
 import { MyContext } from "../types";
@@ -21,10 +22,13 @@ import {
   LoginErrorMessageResponse,
 } from "../utils/ErrorMessageResponse";
 import { generateRandomPwd } from "../utils/generateRandomPwd";
+import { sendEmail } from "../utils/sendEmail";
+import { ForgotPasswordResponse } from "../utils/types/ForgotPasswordResponse";
 import { PaginatedUsers } from "../utils/types/PaginatedUsers";
 import { UserInput } from "../utils/types/UserInput";
 import { UserResponse } from "../utils/types/UserResponse";
 import validateCreateUser from "../utils/validations/validateCreateUser";
+import { validateForgotPassword } from "../utils/validations/validateForgotPassword";
 
 @Resolver(User)
 export class UserResolver {
@@ -38,6 +42,16 @@ export class UserResolver {
     return user.status === 0 ? "Inactivo" : "Activo";
   }
 
+  @FieldResolver(() => String)
+  statusAction(@Root() user: User) {
+    return user.status === 0 ? "Activar" : "Desactivar";
+  }
+
+  @FieldResolver(() => Int)
+  totalCourses(@Root() user: User) {
+    return user.courses?.length || 0;
+  }
+
   @UseMiddleware(isAuth)
   @Authorized<number>(2)
   @Mutation(() => UserResponse)
@@ -47,8 +61,7 @@ export class UserResolver {
       return { errors };
     }
     const randomPwd = generateRandomPwd();
-    const hashedPwd = await await argon2.hash(randomPwd);
-    console.log(randomPwd, hashedPwd);
+    const hashedPwd = await argon2.hash(randomPwd);
     let user;
     try {
       const result = await User.create({
@@ -61,6 +74,7 @@ export class UserResolver {
         country: input.country,
       }).save();
       user = result;
+      sendEmail(user.email, `Bienvenido, tu contraseña es <b>${randomPwd}</b>`);
     } catch (err) {
       if (err.code === "23505") {
         return EmailTakenResponse();
@@ -130,17 +144,26 @@ export class UserResolver {
     @Arg("status", () => Int, { nullable: true }) status: number,
     @Arg("search", () => String, { nullable: true }) search: string,
     @Arg("cursor", () => String, { nullable: true }) cursor: string
+    // @Arg("cursorOption", () => String, { nullable: true }) cursorOption: string
   ): Promise<PaginatedUsers> {
     // filter by status = inactive(0), active(1), all(2)
     const realLimit = Math.min(50, limit);
     const fakeLimit = realLimit + 1;
+    // console.log(`cursor option`, cursorOption);
+    let operator = "<";
+    // if (cursorOption) {
+    //   operator = cursorOption.toLowerCase() === "prev" ? ">" : "<";
+    // }
+    // User.findAndCount();
     const qb = await getConnection()
       .getRepository(User)
       .createQueryBuilder("u")
       .orderBy("u.createdAt", "DESC")
       .limit(fakeLimit);
     if (cursor) {
-      qb.where("u.createdAt < :cursor", { cursor: new Date(parseInt(cursor)) });
+      qb.where(`u.createdAt ${operator} :cursor`, {
+        cursor: new Date(parseInt(cursor)),
+      });
     }
     if (typeof status === "number" && status !== 2) {
       qb.andWhere("u.status = :status", { status });
@@ -173,6 +196,10 @@ export class UserResolver {
     @Arg("id") id: string,
     @Arg("input") input: UserInput
   ): Promise<UserResponse> {
+    const errors = validateCreateUser(input);
+    if (errors) {
+      return { errors };
+    }
     if (input.password) {
       input.password = await argon2.hash(input.password);
     }
@@ -190,6 +217,86 @@ export class UserResolver {
         return EmailTakenResponse();
       }
     }
+    return { user };
+  }
+
+  @Mutation(() => ForgotPasswordResponse)
+  async forgotPassword(
+    @Arg("email") email: string,
+    @Ctx() { redis }: MyContext
+  ): Promise<ForgotPasswordResponse> {
+    const errors = validateForgotPassword(email);
+    const response = true;
+    if (errors) {
+      return { errors };
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return { response };
+    }
+    const token = v4();
+
+    await redis.set(
+      FORGOT_PASSWORD_PREFIX + token,
+      user.id,
+      "ex",
+      1000 * 60 * 60 * 24 * 1 // 1 day
+    );
+
+    sendEmail(
+      email,
+      `<a href="http://localhost:3090/change-password/${token}">Clic aquí para cambiar tu contraseña!</a>`
+    );
+    return { response };
+  }
+
+  //TODO: Move validations to a separate file
+  @Mutation(() => UserResponse)
+  async changePassword(
+    @Arg("token") token: string,
+    @Arg("newPassword") newPassword: string,
+    @Ctx() { redis }: MyContext
+  ): Promise<UserResponse> {
+    if (newPassword.length <= 3) {
+      return {
+        errors: [
+          {
+            field: "newPassword",
+            message: "La contraseña debe ser mayor a 3",
+          },
+        ],
+      };
+    }
+    const key = FORGOT_PASSWORD_PREFIX + token;
+    const userId = await redis.get(key);
+    if (!userId) {
+      return {
+        errors: [
+          {
+            field: "token",
+            message: "El token ha expirado",
+          },
+        ],
+      };
+    }
+    const user = await User.findOne(userId);
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: "token",
+            message: "El usuario no existe",
+          },
+        ],
+      };
+    }
+    await User.update(
+      { id: userId },
+      {
+        password: await argon2.hash(newPassword),
+      }
+    );
+    await redis.del(key);
     return { user };
   }
 }
