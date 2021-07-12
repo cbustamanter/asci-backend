@@ -17,6 +17,7 @@ import {
 import { InputCourseDetail } from "../utils/types/InputCourseDetail";
 import { PaginatedCourses } from "../utils/types/PaginatedCourses";
 import { getRepository } from "typeorm";
+import { SessionFile as EntitySessionFile } from "../entities/SessionFile";
 
 //TODO: IMPROVE THIS CODERINO
 @Resolver(Course)
@@ -46,6 +47,7 @@ export class CourseResolver {
   }
 
   private repo = getRepository(Course);
+  private sessionFileRepo = getRepository(EntitySessionFile);
   @Mutation(() => Course)
   async createCourse(
     @Arg("courseDetail") courseDetail: InputCourseDetail,
@@ -104,5 +106,30 @@ export class CourseResolver {
       data,
       totalPages: Math.ceil(total / take),
     };
+  }
+  @Query(() => Course, { nullable: true })
+  async course(@Arg("id") id: string): Promise<Course | undefined> {
+    return await this.repo.findOne({
+      where: { id },
+      relations: [
+        "courseDetail",
+        "courseDetail.courseSessions",
+        "courseDetail.courseSessions.sessionFiles",
+      ],
+    });
+  }
+  // TODO: Remove physical img
+  @Mutation(() => Boolean)
+  async removeSessionFile(
+    @Arg("id") id: string,
+    @Arg("courseSessionId") courseSessionId: string
+  ): Promise<boolean> {
+    await this.sessionFileRepo
+      .createQueryBuilder()
+      .delete()
+      .where("id =:id", { id })
+      .andWhere("courseSessionId =:courseSessionId", { courseSessionId })
+      .execute();
+    return true;
   }
 }

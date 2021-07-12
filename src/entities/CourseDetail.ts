@@ -18,11 +18,11 @@ export class CourseDetail extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @Column()
   coverPhoto!: string;
 
-  @Field(() => String)
+  @Field(() => Date)
   @Column()
   startDate!: Date;
 
-  @Field(() => String)
+  @Field(() => Date)
   @Column()
   endDate!: Date;
 

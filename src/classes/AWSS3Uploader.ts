@@ -26,7 +26,7 @@ export class AWSS3Uploader implements IUploader {
     this.destinationBucketName = destinationBucketName;
   }
 
-  private createUploadStream(key: string): S3UploadStream {
+  private createUploadStream(key: string, mimetype: string): S3UploadStream {
     const pass = new stream.PassThrough();
     return {
       writeStream: pass,
@@ -35,6 +35,8 @@ export class AWSS3Uploader implements IUploader {
           Bucket: this.destinationBucketName,
           Key: key,
           Body: pass,
+          ContentType: mimetype,
+          ACL: "public-read",
         })
         .promise(),
     };
@@ -47,7 +49,7 @@ export class AWSS3Uploader implements IUploader {
   async singleUpload(file: Promise<FileUpload>): Promise<UploadedFileResponse> {
     const { createReadStream, encoding, filename, mimetype } = await file;
     const filePath = this.createDestinationFilePath(filename);
-    const uploadStream = this.createUploadStream(filePath);
+    const uploadStream = this.createUploadStream(filePath, mimetype);
     createReadStream().pipe(uploadStream.writeStream);
     const result = await uploadStream.promise;
     const link = result.Location;

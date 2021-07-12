@@ -12,10 +12,10 @@ export class InputCourseDetail {
   @Field()
   description: string;
 
-  @Field(() => String)
+  @Field(() => Date)
   startDate: Date;
 
-  @Field(() => String)
+  @Field(() => Date)
   endDate: Date;
 
   @Field()

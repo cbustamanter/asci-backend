@@ -10,10 +10,10 @@ export class InputCourseSession {
   @Field(() => String)
   name!: string;
 
-  @Field(() => String)
+  @Field(() => Date)
   startTime!: Date;
 
-  @Field(() => String)
+  @Field(() => Date)
   endTime!: Date;
 
   @Field(() => String)

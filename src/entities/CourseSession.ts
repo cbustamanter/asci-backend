@@ -11,12 +11,12 @@ export class CourseSession extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @Column()
   name!: string;
 
-  @Field(() => String)
-  @Column({ type: "time" })
+  @Field(() => Date)
+  @Column()
   startTime!: Date;
 
-  @Field(() => String)
-  @Column({ type: "time" })
+  @Field(() => Date)
+  @Column()
   endTime!: Date;
 
   @Field(() => String)
