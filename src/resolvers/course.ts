@@ -107,9 +107,9 @@ export class CourseResolver {
       totalPages: Math.ceil(total / take),
     };
   }
-  @Query(() => Course, { nullable: true })
-  async course(@Arg("id") id: string): Promise<Course | undefined> {
-    return await this.repo.findOne({
+  @Query(() => Course)
+  async course(@Arg("id") id: string): Promise<Course> {
+    return await this.repo.findOneOrFail({
       where: { id },
       relations: [
         "courseDetail",

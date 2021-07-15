@@ -18,7 +18,6 @@ import { SessionFile } from "./entities/SessionFile";
 import { User } from "./entities/User";
 import { isAdmChecker } from "./middlewares/isAdm";
 import { CourseResolver } from "./resolvers/course";
-import { UploadResolver } from "./resolvers/upload";
 import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
 
@@ -61,11 +60,12 @@ const main = async () => {
       resave: false,
     })
   );
-  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+  // TODO: MAX SHOULD BE 20MB
+  app.use(graphqlUploadExpress({ maxFileSize: 100000000, maxFiles: 10 }));
   const apolloServer = new ApolloServer({
     uploads: false,
     schema: await buildSchema({
-      resolvers: [UserResolver, UploadResolver, CourseResolver],
+      resolvers: [UserResolver, CourseResolver],
       validate: false,
       authChecker: isAdmChecker,
     }),
