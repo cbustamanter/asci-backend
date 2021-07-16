@@ -48,6 +48,7 @@ export class CourseResolver {
 
   private repo = getRepository(Course);
   private sessionFileRepo = getRepository(EntitySessionFile);
+
   @Mutation(() => Course)
   async createCourse(
     @Arg("courseDetail") courseDetail: InputCourseDetail,
