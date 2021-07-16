@@ -14,7 +14,7 @@ export class CourseDetail extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @Column()
   description!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Column()
   coverPhoto!: string;
 
@@ -34,7 +34,7 @@ export class CourseDetail extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @OneToMany(
     () => CourseSession,
     (courseSession) => courseSession.courseDetail,
-    { cascade: ["insert"] }
+    { cascade: ["insert", "update"] }
   )
   courseSessions: CourseSession[];
 }

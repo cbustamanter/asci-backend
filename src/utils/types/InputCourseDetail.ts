@@ -3,24 +3,24 @@ import { Field, InputType } from "type-graphql";
 
 @InputType()
 export class InputCourseDetail {
-  @Field()
-  hasTest: boolean;
+  @Field({ nullable: true })
+  hasTest?: boolean;
 
-  @Field()
-  name: string;
+  @Field({ nullable: true })
+  name?: string;
 
-  @Field()
-  description: string;
+  @Field({ nullable: true })
+  description?: string;
 
-  @Field(() => Date)
-  startDate: Date;
+  @Field(() => Date, { nullable: true })
+  startDate?: Date;
 
-  @Field(() => Date)
-  endDate: Date;
+  @Field(() => Date, { nullable: true })
+  endDate?: Date;
 
-  @Field()
-  classUrl: string;
+  @Field({ nullable: true })
+  classUrl?: string;
 
-  @Field(() => GraphQLUpload)
-  coverPhoto: Promise<FileUpload>;
+  @Field(() => GraphQLUpload, { nullable: true })
+  coverPhoto?: Promise<FileUpload>;
 }

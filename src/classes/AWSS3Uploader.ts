@@ -53,7 +53,13 @@ export class AWSS3Uploader implements IUploader {
     createReadStream().pipe(uploadStream.writeStream);
     const result = await uploadStream.promise;
     const link = result.Location;
-    return { filename: filePath, mimetype, encoding, url: link };
+    return {
+      filename: filePath,
+      name: filename,
+      mimetype,
+      encoding,
+      url: link,
+    };
   }
 
   async multipleUpload(

@@ -24,7 +24,7 @@ export class Course extends EntityWithBase(EntityWithDates(BaseEntity)) {
   hasTest!: boolean;
 
   @Field(() => CourseDetail)
-  @OneToOne(() => CourseDetail, { cascade: ["insert"] })
+  @OneToOne(() => CourseDetail, { cascade: ["insert", "update"] })
   @JoinColumn()
   courseDetail: CourseDetail;
 

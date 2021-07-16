@@ -11,6 +11,18 @@ export class SessionFile extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @Column()
   filename: string;
 
+  @Field(() => String, { nullable: true })
+  @Column()
+  name: string;
+
+  @Field(() => String, { nullable: true })
+  @Column()
+  mimetype: string;
+
+  @Field(() => String, { nullable: true })
+  @Column()
+  encoding: string;
+
   @Field(() => CourseSession)
   @ManyToOne(() => CourseSession, (courSession) => courSession.sessionFiles)
   courseSession: CourseSession;

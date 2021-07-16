@@ -29,7 +29,7 @@ export class CourseSession extends EntityWithBase(EntityWithDates(BaseEntity)) {
 
   @Field(() => [SessionFile], { nullable: true })
   @OneToMany(() => SessionFile, (sessionFile) => sessionFile.courseSession, {
-    cascade: ["insert"],
+    cascade: ["insert", "update"],
   })
   sessionFiles: SessionFile[];
 }

@@ -57,9 +57,14 @@ export class CourseResolver {
   ): Promise<Course> {
     const coverUploader = new AWSS3Uploader(`${S3_BUCKET}${S3_COVER_PATH}`);
     const sessionUploader = new AWSS3Uploader(`${S3_BUCKET}${S3_SESSION_PATH}`);
-    const { filename } = await coverUploader.singleUpload(
-      courseDetail.coverPhoto
-    );
+    let coverPhoto;
+    if (courseDetail.coverPhoto) {
+      const { filename } = await coverUploader.singleUpload(
+        courseDetail.coverPhoto
+      );
+      coverPhoto = `${S3_COVER_PATH}/${filename}`;
+    }
+
     if (courseSessions.length) {
       await Promise.all(
         courseSessions.map(async (session, idx) => {
@@ -68,7 +73,12 @@ export class CourseResolver {
               session.files
             );
             const sessionFiles: SessionFile[] = uploadedFiles.map((file) => {
-              return { filename: `${S3_SESSION_PATH}/${file.filename}` };
+              return {
+                filename: `${S3_SESSION_PATH}/${file.filename}`,
+                name: file.name,
+                encoding: file.encoding,
+                mimetype: file.mimetype,
+              };
             });
             courseSessions[idx]["sessionFiles"] = sessionFiles;
           }
@@ -80,10 +90,41 @@ export class CourseResolver {
       hasTest: courseDetail.hasTest,
       courseDetail: {
         ...courseDetail,
-        coverPhoto: `${S3_COVER_PATH}/${filename}`,
+        coverPhoto,
         courseSessions,
       },
     }).save();
+  }
+  @Mutation(() => Boolean)
+  async updateCourse(
+    @Arg("id") id: string,
+    @Arg("courseDetail", () => InputCourseDetail, { nullable: true })
+    courseDetail: InputCourseDetail,
+    @Arg("courseSessions", () => [InputCourseSession], {
+      nullable: "itemsAndList",
+    })
+    courseSessions: [InputCourseSession]
+  ): Promise<boolean> {
+    const coverUploader = new AWSS3Uploader(`${S3_BUCKET}${S3_COVER_PATH}`);
+    let coverPhoto;
+    if (courseDetail.coverPhoto) {
+      const { filename } = await coverUploader.singleUpload(
+        courseDetail.coverPhoto
+      );
+      coverPhoto = `${S3_COVER_PATH}/${filename}`;
+    }
+    const course = await this.repo.findOneOrFail(
+      { id },
+      { relations: ["courseDetail"], select: ["id", "courseDetail"] }
+    );
+    await Course.update(
+      { id, courseDetail: { id: course.courseDetail.id } },
+      {
+        hasTest: courseDetail.hasTest,
+        courseDetail: { ...courseDetail, coverPhoto },
+      }
+    );
+    return true;
   }
 
   @Query(() => PaginatedCourses)

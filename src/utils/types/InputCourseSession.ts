@@ -3,24 +3,27 @@ import { Field, InputType } from "type-graphql";
 
 export type SessionFile = {
   filename: string;
+  name: string;
+  mimetype: string;
+  encoding: string;
 };
 
 @InputType()
 export class InputCourseSession {
-  @Field(() => String)
-  name!: string;
+  @Field(() => String, { nullable: true })
+  name?: string;
 
-  @Field(() => Date)
-  startTime!: Date;
+  @Field(() => Date, { nullable: true })
+  startTime?: Date;
 
-  @Field(() => Date)
-  endTime!: Date;
+  @Field(() => Date, { nullable: true })
+  endTime?: Date;
 
-  @Field(() => String)
-  recordingUrl: string;
+  @Field(() => String, { nullable: true })
+  recordingUrl?: string;
 
   @Field(() => [GraphQLUpload], { nullable: true })
-  files: [Promise<FileUpload>];
+  files?: [Promise<FileUpload>];
 
   sessionFiles: SessionFile[];
 }
