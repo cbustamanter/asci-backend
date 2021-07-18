@@ -1,13 +1,6 @@
 import { FileUpload, GraphQLUpload } from "graphql-upload";
 import { Field, InputType } from "type-graphql";
 
-export type SessionFile = {
-  filename: string;
-  name: string;
-  mimetype: string;
-  encoding: string;
-};
-
 @InputType()
 export class InputCourseSession {
   @Field(() => String, { nullable: true })
@@ -24,6 +17,4 @@ export class InputCourseSession {
 
   @Field(() => [GraphQLUpload], { nullable: true })
   files?: [Promise<FileUpload>];
-
-  sessionFiles: SessionFile[];
 }

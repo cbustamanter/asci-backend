@@ -24,12 +24,16 @@ export class CourseSession extends EntityWithBase(EntityWithDates(BaseEntity)) {
   recordingUrl: string;
 
   @Field(() => CourseDetail)
-  @ManyToOne(() => CourseDetail, (courseDetail) => courseDetail.courseSessions)
+  @ManyToOne(
+    () => CourseDetail,
+    (courseDetail) => courseDetail.courseSessions,
+    { cascade: ["insert"] }
+  )
   courseDetail: CourseDetail;
 
   @Field(() => [SessionFile], { nullable: true })
   @OneToMany(() => SessionFile, (sessionFile) => sessionFile.courseSession, {
-    cascade: ["insert", "update"],
+    cascade: ["insert"],
   })
-  sessionFiles: SessionFile[];
+  courseSessionFiles: SessionFile[];
 }

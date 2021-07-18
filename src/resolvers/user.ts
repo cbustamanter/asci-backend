@@ -11,7 +11,7 @@ import {
   Root,
   UseMiddleware,
 } from "type-graphql";
-import { getConnection } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 import { v4 } from "uuid";
 import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from "../constants";
 import { User } from "../entities/User";
@@ -32,6 +32,8 @@ import { validateForgotPassword } from "../utils/validations/validateForgotPassw
 
 @Resolver(User)
 export class UserResolver {
+  private repo = getRepository(User);
+
   @FieldResolver(() => String)
   genderText(@Root() user: User) {
     return user.gender === 0 ? "Femenino" : "Masculino";
@@ -39,12 +41,12 @@ export class UserResolver {
 
   @FieldResolver(() => String)
   statusText(@Root() user: User) {
-    return user.status === 0 ? "Inactivo" : "Activo";
+    return user.status === 2 ? "Inactivo" : "Activo";
   }
 
   @FieldResolver(() => String)
   statusAction(@Root() user: User) {
-    return user.status === 0 ? "Activar" : "Desactivar";
+    return user.status === 2 ? "Activar" : "Desactivar";
   }
 
   @FieldResolver(() => Int)
@@ -139,33 +141,23 @@ export class UserResolver {
   @UseMiddleware(isAuth)
   @Authorized<number>(2)
   @Query(() => PaginatedUsers)
-  async getUsers(
-    @Arg("limit", () => Int) limit: number,
+  async users(
     @Arg("status", () => Int, { nullable: true }) status: number,
     @Arg("search", () => String, { nullable: true }) search: string,
-    @Arg("cursor", () => String, { nullable: true }) cursor: string
-    // @Arg("cursorOption", () => String, { nullable: true }) cursorOption: string
+    @Arg("page", () => Int) page: number,
+    @Arg("per_page", () => Int, { nullable: true }) per_page: number
   ): Promise<PaginatedUsers> {
-    // filter by status = inactive(0), active(1), all(2)
-    const realLimit = Math.min(50, limit);
-    const fakeLimit = realLimit + 1;
-    // console.log(`cursor option`, cursorOption);
-    let operator = "<";
-    // if (cursorOption) {
-    //   operator = cursorOption.toLowerCase() === "prev" ? ">" : "<";
-    // }
-    // User.findAndCount();
-    const qb = await getConnection()
-      .getRepository(User)
+    const repo = this.repo;
+    const take = per_page || 10;
+    const skip = (page - 1) * take;
+
+    const qb = repo
       .createQueryBuilder("u")
       .orderBy("u.createdAt", "DESC")
-      .limit(fakeLimit);
-    if (cursor) {
-      qb.where(`u.createdAt ${operator} :cursor`, {
-        cursor: new Date(parseInt(cursor)),
-      });
-    }
-    if (typeof status === "number" && status !== 2) {
+      .take(take)
+      .skip(skip);
+
+    if (status && status !== 0) {
       qb.andWhere("u.status = :status", { status });
     }
     if (search) {
@@ -175,10 +167,11 @@ export class UserResolver {
       );
     }
     qb.andWhere("u.role = 1");
-    const users = await qb.getMany();
+    const [data, total] = await qb.getManyAndCount();
     return {
-      users: users.slice(0, realLimit),
-      hasMore: users.length === fakeLimit,
+      prev: page > 1 ? page - 1 : null,
+      data: data,
+      totalPages: Math.ceil(total / take),
     };
   }
 

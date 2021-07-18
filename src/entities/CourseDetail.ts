@@ -30,11 +30,15 @@ export class CourseDetail extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @Column()
   classUrl!: String;
 
+  @Field(() => Boolean)
+  @Column()
+  hasTest!: boolean;
+
   @Field(() => [CourseSession])
   @OneToMany(
     () => CourseSession,
     (courseSession) => courseSession.courseDetail,
-    { cascade: ["insert", "update"] }
+    { cascade: ["insert"] }
   )
   courseSessions: CourseSession[];
 }

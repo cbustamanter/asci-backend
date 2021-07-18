@@ -17,11 +17,7 @@ import { User } from "./User";
 export class Course extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @Field(() => Int)
   @Column({ type: "smallint", default: 1 })
-  status: number; //1:active 2:inactive 3:havent started yet
-
-  @Field(() => Boolean)
-  @Column()
-  hasTest!: boolean;
+  status: number; //1:active 0:inactive 2:havent started yet
 
   @Field(() => CourseDetail)
   @OneToOne(() => CourseDetail, { cascade: ["insert", "update"] })

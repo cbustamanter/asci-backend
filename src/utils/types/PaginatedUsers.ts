@@ -1,12 +1,14 @@
-import { ObjectType, Field } from "type-graphql";
+import { ObjectType, Field, Int } from "type-graphql";
 import { User } from "../../entities/User";
 
 @ObjectType()
 export class PaginatedUsers {
+  @Field(() => Int, { nullable: true })
+  prev: number | null;
+
   @Field(() => [User])
-  users: User[];
-  @Field()
-  hasMore: boolean;
-  // @Field()
-  // hasLess: boolean;
+  data: User[];
+
+  @Field(() => Int)
+  totalPages: number;
 }

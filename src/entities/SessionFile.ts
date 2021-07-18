@@ -24,6 +24,12 @@ export class SessionFile extends EntityWithBase(EntityWithDates(BaseEntity)) {
   encoding: string;
 
   @Field(() => CourseSession)
-  @ManyToOne(() => CourseSession, (courSession) => courSession.sessionFiles)
+  @ManyToOne(
+    () => CourseSession,
+    (courSession) => courSession.courseSessionFiles,
+    {
+      cascade: ["insert"],
+    }
+  )
   courseSession: CourseSession;
 }

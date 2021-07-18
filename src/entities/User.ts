@@ -18,8 +18,8 @@ export class User extends EntityWithDates(EntityWithBase(BaseEntity)) {
   password!: string;
 
   @Field(() => Int)
-  @Column()
-  gender!: number; // 0 || 1
+  @Column({ type: "smallint", default: 1 })
+  gender!: number; // 1: active 2:inactive
 
   @Field(() => String)
   @Column()
