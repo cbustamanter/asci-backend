@@ -11,15 +11,12 @@ import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { COOKIE_NAME, __prod__ } from "./constants";
-import { Course } from "./entities/Course";
-import { CourseDetail } from "./entities/CourseDetail";
-import { CourseSession } from "./entities/CourseSession";
-import { SessionFile } from "./entities/SessionFile";
-import { User } from "./entities/User";
 import { isAdmChecker } from "./middlewares/isAdm";
 import { CourseResolver } from "./resolvers/course";
+import { QuizResolver } from "./resolvers/quizz";
 import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
+import { Entities } from "./utils/Entities";
 
 const main = async () => {
   await createConnection({
@@ -28,7 +25,7 @@ const main = async () => {
     synchronize: true,
     logging: true,
     migrations: [path.join(__dirname, "./migrations/*")],
-    entities: [User, Course, CourseDetail, CourseSession, SessionFile],
+    entities: Entities,
   });
   // await conn.runMigrations();
   const app = express();
@@ -60,12 +57,11 @@ const main = async () => {
       resave: false,
     })
   );
-  // TODO: MAX SHOULD BE 20MB
-  app.use(graphqlUploadExpress({ maxFileSize: 100000000, maxFiles: 10 }));
+  app.use(graphqlUploadExpress({ maxFileSize: 20000000, maxFiles: 10 }));
   const apolloServer = new ApolloServer({
     uploads: false,
     schema: await buildSchema({
-      resolvers: [UserResolver, CourseResolver],
+      resolvers: [UserResolver, CourseResolver, QuizResolver],
       validate: false,
       authChecker: isAdmChecker,
     }),

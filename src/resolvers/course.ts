@@ -16,14 +16,15 @@ import { S3_BUCKET, S3_COVER_PATH, S3_SESSION_PATH } from "../constants";
 import { Course } from "../entities/Course";
 import { CourseDetail } from "../entities/CourseDetail";
 import { CourseSession } from "../entities/CourseSession";
+import { Quizz } from "../entities/Quizz";
 import { SessionFile as EntitySessionFile } from "../entities/SessionFile";
 import { isAuth } from "../middlewares/isAuth";
 import { InputCourseDetail } from "../utils/types/InputCourseDetail";
 import { InputCourseSession } from "../utils/types/InputCourseSession";
 import { InputCourseSessionUpdate } from "../utils/types/InputCourseSessionUpdate";
+import { PaginatedArgs } from "../utils/types/PaginatedArgs";
 import { PaginatedCourses } from "../utils/types/PaginatedCourses";
 
-//TODO: IMPROVE THIS CODERINO
 @Resolver(Course)
 export class CourseResolver {
   @FieldResolver(() => Int)
@@ -59,6 +60,7 @@ export class CourseResolver {
   private courseDetailRepo = getRepository(CourseDetail);
   private sessionFileRepo = getRepository(EntitySessionFile);
   private courseSessionRepo = getRepository(CourseSession);
+  private quizRepo = getRepository(Quizz);
 
   @UseMiddleware(isAuth)
   @Authorized<number>(2)
@@ -79,6 +81,10 @@ export class CourseResolver {
     const course = await this.repo
       .create({ courseDetail: { ...courseDetail, coverPhoto } })
       .save();
+
+    if (courseDetail.hasTest) {
+      await this.createQuiz(course.id);
+    }
 
     if (courseSessions.length) {
       await Promise.all(
@@ -126,6 +132,17 @@ export class CourseResolver {
         ...courseDetail,
         coverPhoto,
       });
+      const quizz = await this.quizRepo.findOne({ course: { id: id } });
+      if (quizz) {
+        await this.quizRepo.save({
+          ...quizz,
+          status: courseDetail.hasTest ? 1 : 2,
+        });
+      } else {
+        if (courseDetail.hasTest) {
+          await this.createQuiz(id);
+        }
+      }
     }
     if (courseSessions) {
       await Promise.all(
@@ -137,20 +154,31 @@ export class CourseResolver {
               ...session,
             });
             if (session.files) {
-              this.createSessionFiles(session.files, session.id);
+              await this.createSessionFiles(session.files, session.id);
             }
           } else {
             // If doesn't exist, create it
             const createdSession = await this.courseSessionRepo
-              .create({ ...session })
+              .create({
+                ...session,
+                courseDetail: { id: course.courseDetail.id },
+              })
               .save();
             if (session.files) {
-              this.createSessionFiles(session.files, createdSession.id);
+              await this.createSessionFiles(session.files, createdSession.id);
             }
           }
         })
       );
     }
+    return true;
+  }
+
+  @UseMiddleware(isAuth)
+  @Authorized<number>(2)
+  @Mutation(() => Boolean)
+  async deleteSession(@Arg("id") id: string): Promise<boolean> {
+    await this.courseSessionRepo.delete({ id });
     return true;
   }
 
@@ -169,24 +197,23 @@ export class CourseResolver {
   @Authorized<number>(2)
   @Query(() => PaginatedCourses)
   async courses(
-    @Arg("status", () => Int, { nullable: true }) status: number,
-    @Arg("search", () => String, { nullable: true }) search: string,
-    @Arg("page", () => Int) page: number,
-    @Arg("per_page", () => Int, { nullable: true }) per_page: number
+    @Arg("args", () => PaginatedArgs) args: PaginatedArgs
   ): Promise<PaginatedCourses> {
     const repo = this.repoWithRelations();
-    const take = per_page || 10;
-    const skip = (page - 1) * take;
+    const take = args.per_page || 10;
+    const skip = (args.page - 1) * take;
     const qb = repo.orderBy("c.createdAt", "DESC").take(take).skip(skip);
-    if (status && status !== 0) {
-      qb.andWhere("c.status = :status", { status });
+    if (args.status && args.status !== 0) {
+      qb.andWhere("c.status = :status", { status: args.status });
     }
-    if (search) {
-      qb.andWhere("LOWER(cd.name) like :search", { search: `%${search}%` });
+    if (args.search) {
+      qb.andWhere("LOWER(cd.name) like :search", {
+        search: `%${args.search}%`,
+      });
     }
     const [data, total] = await qb.getManyAndCount();
     return {
-      prev: page > 1 ? page - 1 : null,
+      prev: args.page > 1 ? args.page - 1 : null,
       data: data,
       totalPages: Math.ceil(total / take),
     };
@@ -228,5 +255,9 @@ export class CourseResolver {
     const coverUploader = new AWSS3Uploader(`${S3_BUCKET}${S3_COVER_PATH}`);
     const { filename } = await coverUploader.singleUpload(file);
     return filename;
+  }
+
+  async createQuiz(courseId: string) {
+    await this.quizRepo.create({ course: { id: courseId } }).save();
   }
 }

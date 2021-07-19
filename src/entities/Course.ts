@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { CourseDetail } from "./CourseDetail";
 import { EntityWithBase, EntityWithDates } from "./mixins/EntityManager";
+import { Quizz } from "./Quizz";
 import { User } from "./User";
 
 @ObjectType()
@@ -23,6 +24,12 @@ export class Course extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @OneToOne(() => CourseDetail, { cascade: ["insert", "update"] })
   @JoinColumn()
   courseDetail: CourseDetail;
+
+  @Field(() => Quizz, { nullable: true })
+  @OneToOne(() => Quizz, (quizz) => quizz.course, {
+    cascade: ["insert", "update"],
+  })
+  quizz: Quizz | null;
 
   @Field(() => [User], { nullable: true })
   @ManyToMany(() => User, (user) => user.courses)

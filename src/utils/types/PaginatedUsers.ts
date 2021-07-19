@@ -1,14 +1,9 @@
-import { ObjectType, Field, Int } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 import { User } from "../../entities/User";
+import { PaginatedResponse } from "./PaginatedResponse";
 
 @ObjectType()
-export class PaginatedUsers {
-  @Field(() => Int, { nullable: true })
-  prev: number | null;
-
+export class PaginatedUsers extends PaginatedResponse {
   @Field(() => [User])
   data: User[];
-
-  @Field(() => Int)
-  totalPages: number;
 }

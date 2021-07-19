@@ -5,7 +5,6 @@ import { EntityWithBase, EntityWithDates } from "./mixins/EntityManager";
 
 @ObjectType()
 @Entity()
-//TODO: add new fields to store in DB.
 export class SessionFile extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @Field(() => String, { nullable: true })
   @Column()
@@ -27,9 +26,7 @@ export class SessionFile extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @ManyToOne(
     () => CourseSession,
     (courSession) => courSession.courseSessionFiles,
-    {
-      cascade: ["insert"],
-    }
+    { onDelete: "CASCADE" }
   )
   courseSession: CourseSession;
 }

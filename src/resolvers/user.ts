@@ -24,6 +24,7 @@ import {
 import { generateRandomPwd } from "../utils/generateRandomPwd";
 import { sendEmail } from "../utils/sendEmail";
 import { ForgotPasswordResponse } from "../utils/types/ForgotPasswordResponse";
+import { PaginatedArgs } from "../utils/types/PaginatedArgs";
 import { PaginatedUsers } from "../utils/types/PaginatedUsers";
 import { UserInput } from "../utils/types/UserInput";
 import { UserResponse } from "../utils/types/UserResponse";
@@ -142,14 +143,11 @@ export class UserResolver {
   @Authorized<number>(2)
   @Query(() => PaginatedUsers)
   async users(
-    @Arg("status", () => Int, { nullable: true }) status: number,
-    @Arg("search", () => String, { nullable: true }) search: string,
-    @Arg("page", () => Int) page: number,
-    @Arg("per_page", () => Int, { nullable: true }) per_page: number
+    @Arg("args", () => PaginatedArgs) args: PaginatedArgs
   ): Promise<PaginatedUsers> {
     const repo = this.repo;
-    const take = per_page || 10;
-    const skip = (page - 1) * take;
+    const take = args.per_page || 10;
+    const skip = (args.page - 1) * take;
 
     const qb = repo
       .createQueryBuilder("u")
@@ -157,19 +155,19 @@ export class UserResolver {
       .take(take)
       .skip(skip);
 
-    if (status && status !== 0) {
-      qb.andWhere("u.status = :status", { status });
+    if (args.status && args.status !== 0) {
+      qb.andWhere("u.status = :status", { status: args.status });
     }
-    if (search) {
+    if (args.search) {
       qb.andWhere(
         "(LOWER(u.names) like :search OR LOWER(u.surnames) like :search OR LOWER(u.email) like :search)",
-        { search: `%${search}%` }
+        { search: `%${args.search}%` }
       );
     }
     qb.andWhere("u.role = 1");
     const [data, total] = await qb.getManyAndCount();
     return {
-      prev: page > 1 ? page - 1 : null,
+      prev: args.page > 1 ? args.page - 1 : null,
       data: data,
       totalPages: Math.ceil(total / take),
     };
