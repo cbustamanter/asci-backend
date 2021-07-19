@@ -11,9 +11,10 @@ import {
   Root,
   UseMiddleware,
 } from "type-graphql";
-import { getConnection, getRepository } from "typeorm";
+import { getConnection, getRepository, In, Like } from "typeorm";
 import { v4 } from "uuid";
 import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from "../constants";
+import { Course } from "../entities/Course";
 import { User } from "../entities/User";
 import { isAuth } from "../middlewares/isAuth";
 import { MyContext } from "../types";
@@ -34,6 +35,7 @@ import { validateForgotPassword } from "../utils/validations/validateForgotPassw
 @Resolver(User)
 export class UserResolver {
   private repo = getRepository(User);
+  private courseRepo = getRepository(Course);
 
   @FieldResolver(() => String)
   genderText(@Root() user: User) {
@@ -151,6 +153,7 @@ export class UserResolver {
 
     const qb = repo
       .createQueryBuilder("u")
+      .leftJoinAndSelect("u.courses", "c")
       .orderBy("u.createdAt", "DESC")
       .take(take)
       .skip(skip);
@@ -178,6 +181,35 @@ export class UserResolver {
   @Query(() => User)
   async getUser(@Arg("id") id: string): Promise<User | undefined> {
     return User.findOne(id);
+  }
+
+  @UseMiddleware(isAuth)
+  @Authorized<number>(2)
+  @Query(() => [User], { nullable: true })
+  async searchUsers(@Arg("arg") arg: string): Promise<User[] | null> {
+    if (arg.length < 2) return null;
+    return this.repo.find({
+      where: [
+        { names: Like(`%${arg}%`) },
+        { email: Like(`%${arg}%`) },
+        { surnames: Like(`%${arg}%`) },
+      ],
+    });
+  }
+
+  @UseMiddleware(isAuth)
+  @Authorized<number>(2)
+  @Mutation(() => Boolean, { nullable: true })
+  async usersToCourse(
+    @Arg("ids", () => [String]) ids: string[]
+  ): Promise<boolean> {
+    const users = await this.repo.find({ where: { id: In(ids) } });
+    const course = await this.courseRepo.findOneOrFail({
+      id: "f4429716-e016-4038-a37d-35e12ce2a23b",
+    });
+    course.users = users;
+    await course.save();
+    return true;
   }
 
   @UseMiddleware(isAuth)

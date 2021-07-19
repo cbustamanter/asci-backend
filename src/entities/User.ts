@@ -42,7 +42,6 @@ export class User extends EntityWithDates(EntityWithBase(BaseEntity)) {
   country: string;
 
   @Field(() => [Course], { nullable: true })
-  @ManyToMany(() => Course)
-  @JoinTable()
+  @ManyToMany(() => Course, (courses) => courses.users)
   courses?: Course[];
 }

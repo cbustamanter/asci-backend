@@ -32,7 +32,7 @@ export class Course extends EntityWithBase(EntityWithDates(BaseEntity)) {
   quizz: Quizz | null;
 
   @Field(() => [User], { nullable: true })
-  @ManyToMany(() => User, (user) => user.courses)
+  @ManyToMany(() => User, (user) => user.courses, { cascade: true })
   @JoinTable()
   users?: User[];
 }

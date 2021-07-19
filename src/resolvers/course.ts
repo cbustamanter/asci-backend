@@ -233,6 +233,7 @@ export class CourseResolver {
   repoWithRelations() {
     return this.repo
       .createQueryBuilder("c")
+      .leftJoinAndSelect("c.users", "u")
       .leftJoinAndSelect("c.courseDetail", "cd")
       .leftJoinAndSelect("cd.courseSessions", "cs")
       .leftJoinAndSelect("cs.courseSessionFiles", "f");
