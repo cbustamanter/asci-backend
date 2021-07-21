@@ -16,7 +16,9 @@ export class Question extends EntityWithBase(EntityWithDates(BaseEntity)) {
   score: number;
 
   @Field(() => [Answer], { nullable: true })
-  @OneToMany(() => Answer, (answer) => answer.question, { cascade: ["insert"] })
+  @OneToMany(() => Answer, (answer) => answer.question, {
+    cascade: ["insert", "update"],
+  })
   answers: Answer[];
 
   @Field(() => QuizzDetail)

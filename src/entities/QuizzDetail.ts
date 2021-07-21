@@ -1,7 +1,8 @@
-import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, Column, Entity, OneToMany } from "typeorm";
+import { Field, Int, ObjectType } from "type-graphql";
+import { BaseEntity, Column, Entity, OneToMany, OneToOne } from "typeorm";
 import { EntityWithBase, EntityWithDates } from "./mixins/EntityManager";
 import { Question } from "./Question";
+import { Quizz } from "./Quizz";
 
 @ObjectType()
 @Entity()
@@ -10,17 +11,21 @@ export class QuizzDetail extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @Column()
   description: string;
 
-  @Field(() => String)
+  @Field(() => Int)
   @Column()
-  endDate: Date;
+  availableTime: number;
 
-  @Field()
+  @Field(() => Int)
   @Column()
-  timeToComplete: string;
+  timeToComplete: number;
+
+  @Field(() => Quizz)
+  @OneToOne(() => Quizz, (quizz) => quizz.quizzDetail)
+  quizz: Quizz;
 
   @Field(() => [Question])
   @OneToMany(() => Question, (questions) => questions.quizzDetail, {
-    cascade: ["insert"],
+    cascade: ["insert", "update"],
   })
   questions: Question[];
 }

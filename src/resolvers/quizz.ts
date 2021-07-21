@@ -1,6 +1,15 @@
-import { Arg, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import {
+  Arg,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { getRepository } from "typeorm";
 import { Quizz } from "../entities/Quizz";
+import { QuizzDetail } from "../entities/QuizzDetail";
+import { InputQuizz } from "../utils/types/InputQuizz";
 import { PaginatedArgs } from "../utils/types/PaginatedArgs";
 import { PaginatedQuizzes } from "../utils/types/PaginatedQuizzes";
 
@@ -8,15 +17,39 @@ import { PaginatedQuizzes } from "../utils/types/PaginatedQuizzes";
 @Resolver(Quizz)
 export class QuizResolver {
   private repo = getRepository(Quizz);
+  private quizzDetailrepo = getRepository(QuizzDetail);
 
   @FieldResolver(() => String)
   statusText(@Root() quizz: Quizz) {
     return quizz.status === 1 ? "Activo" : "Inactivo";
   }
 
-  @FieldResolver(() => String)
-  statusAction(@Root() quizz: Quizz) {
-    return quizz.status === 1 ? "Desactivar" : "Activar";
+  @Mutation(() => Boolean)
+  async updateQuizz(@Arg("args") args: InputQuizz): Promise<boolean> {
+    const quizz = await this.repoWithRelations()
+      .where("q.id = :id", { id: args.id })
+      .getOneOrFail();
+    if (quizz.quizzDetail) {
+      await this.quizzDetailrepo.save({
+        ...quizz.quizzDetail,
+        description: args.description,
+        availableTime: args.availableTime,
+        timeToComplete: args.timeToComplete,
+        questions: args.questions,
+      });
+    } else {
+      await this.quizzDetailrepo
+        .create({
+          quizz: { id: args.id },
+          description: args.description,
+          availableTime: args.availableTime,
+          timeToComplete: args.timeToComplete,
+          questions: args.questions,
+        })
+        .save();
+    }
+
+    return true;
   }
 
   @Query(() => PaginatedQuizzes)
@@ -45,7 +78,13 @@ export class QuizResolver {
 
   @Query(() => Quizz)
   async quizz(@Arg("id") id: string): Promise<Quizz> {
-    return this.repoWithRelations().where("q.id = :id", { id }).getOneOrFail();
+    return this.repoWithRelations()
+      .orderBy({
+        "qn.createdAt": "ASC",
+        "a.createdAt": "ASC",
+      })
+      .where("q.id = :id", { id })
+      .getOneOrFail();
   }
 
   repoWithRelations() {
