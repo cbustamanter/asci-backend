@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from "type-graphql";
-import { BaseEntity, Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToMany } from "typeorm";
 import { Course } from "./Course";
 import { EntityWithBase, EntityWithDates } from "./mixins/EntityManager";
 
