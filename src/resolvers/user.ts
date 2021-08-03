@@ -340,4 +340,17 @@ export class UserResolver {
     await redis.del(key);
     return { user };
   }
+
+  @UseMiddleware(isAuth)
+  @Query(() => [Course])
+  async userCourses(@Ctx() { req }: MyContext): Promise<Course[]> {
+    const result = await this.courseRepo
+      .createQueryBuilder("c")
+      .select(["c.id", "cd.id", "cd.name", "cd.description", "cd.coverPhoto"])
+      .leftJoin("c.courseDetail", "cd")
+      .leftJoin("c.users", "u")
+      .where("u.id = :id", { id: req.session.userId })
+      .getMany();
+    return result;
+  }
 }
