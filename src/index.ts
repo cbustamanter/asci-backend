@@ -13,6 +13,8 @@ import { createConnection } from "typeorm";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import { isAdmChecker } from "./middlewares/isAdm";
 import { CourseResolver } from "./resolvers/course";
+import { IntranetCourseResolver } from "./resolvers/intranet/course";
+import { IntranetSessionResolver } from "./resolvers/intranet/courseSession";
 import { QuizResolver } from "./resolvers/quizz";
 import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
@@ -61,7 +63,13 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     uploads: false,
     schema: await buildSchema({
-      resolvers: [UserResolver, CourseResolver, QuizResolver],
+      resolvers: [
+        UserResolver,
+        CourseResolver,
+        QuizResolver,
+        IntranetCourseResolver,
+        IntranetSessionResolver,
+      ],
       validate: false,
       authChecker: isAdmChecker,
     }),

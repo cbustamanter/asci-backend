@@ -1,0 +1,17 @@
+export const userCourseSelect = [
+  "c.id",
+  "cd.id",
+  "cd.name",
+  "cd.description",
+  "cd.hasTest",
+  "cd.startDate",
+  "cd.endDate",
+  "cd.coverPhoto",
+  "cs.id",
+  "cs.name",
+  "cs.startTime",
+  "cs.endTime",
+  "f.id",
+  "f.name",
+  "f.filename",
+];
