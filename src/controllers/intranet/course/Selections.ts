@@ -1,5 +1,9 @@
 export const userCourseSelect = [
   "c.id",
+  "q.id",
+  "q.status",
+  "qd.id",
+  "qd.availableTime",
   "cd.id",
   "cd.name",
   "cd.description",

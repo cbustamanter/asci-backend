@@ -11,6 +11,7 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { CourseController } from "../../controllers/intranet/course/CourseController";
+import { Course } from "../../entities/Course";
 import { CourseDetail } from "../../entities/CourseDetail";
 import { CourseSession } from "../../entities/CourseSession";
 import { isAuth } from "../../middlewares/isAuth";
@@ -54,8 +55,8 @@ export class IntranetCourseResolver {
   }
 
   @UseMiddleware(isAuth)
-  @Query(() => CourseDetail)
-  async userCourse(@Arg("courseId") courseId: string): Promise<CourseDetail> {
+  @Query(() => Course)
+  async userCourse(@Arg("courseId") courseId: string): Promise<Course> {
     return this.oCourse.course(courseId);
   }
 }

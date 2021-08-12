@@ -15,6 +15,7 @@ import { isAdmChecker } from "./middlewares/isAdm";
 import { CourseResolver } from "./resolvers/course";
 import { IntranetCourseResolver } from "./resolvers/intranet/course";
 import { IntranetSessionResolver } from "./resolvers/intranet/courseSession";
+import { PerformedQuizzResolver } from "./resolvers/intranet/performedQuizz";
 import { QuizResolver } from "./resolvers/quizz";
 import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
@@ -69,6 +70,7 @@ const main = async () => {
         QuizResolver,
         IntranetCourseResolver,
         IntranetSessionResolver,
+        PerformedQuizzResolver,
       ],
       validate: false,
       authChecker: isAdmChecker,

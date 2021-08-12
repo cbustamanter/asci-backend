@@ -19,6 +19,10 @@ export class QuizzDetail extends EntityWithBase(EntityWithDates(BaseEntity)) {
   @Column()
   timeToComplete: number;
 
+  @Field(() => Int)
+  @Column({ default: 13 })
+  minScore: number;
+
   @Field(() => Quizz)
   @OneToOne(() => Quizz, (quizz) => quizz.quizzDetail)
   quizz: Quizz;

@@ -1,5 +1,5 @@
-import { CourseDetail } from "../../../entities/CourseDetail";
+import { Course } from "../../../entities/Course";
 
 export interface CourseService {
-  course: (courseId: String) => Promise<CourseDetail>;
+  course: (courseId: String) => Promise<Course>;
 }

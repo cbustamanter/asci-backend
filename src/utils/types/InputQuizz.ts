@@ -15,6 +15,9 @@ export class InputQuizz {
   @Field(() => Int)
   timeToComplete: number;
 
+  @Field(() => Int)
+  minScore: number;
+
   @Field(() => [InputQuestion], { nullable: "itemsAndList" })
   questions?: InputQuestion[];
 }

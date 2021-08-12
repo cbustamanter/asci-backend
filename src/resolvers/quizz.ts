@@ -35,6 +35,7 @@ export class QuizResolver {
         description: args.description,
         availableTime: args.availableTime,
         timeToComplete: args.timeToComplete,
+        minScore: args.minScore,
         questions: args.questions,
       });
     } else {
@@ -44,6 +45,7 @@ export class QuizResolver {
           description: args.description,
           availableTime: args.availableTime,
           timeToComplete: args.timeToComplete,
+          minScore: args.minScore,
           questions: args.questions,
         })
         .save();
