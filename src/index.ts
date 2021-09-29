@@ -1,3 +1,4 @@
+import sgMail from "@sendgrid/mail";
 import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
 import cors from "cors";
@@ -10,7 +11,7 @@ import path from "path";
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
-import { COOKIE_NAME, __prod__ } from "./constants";
+import { COOKIE_NAME, SENDGRID_KEY, __prod__ } from "./constants";
 import { isAdmChecker } from "./middlewares/isAdm";
 import { CourseResolver } from "./resolvers/course";
 import { IntranetCourseResolver } from "./resolvers/intranet/course";
@@ -31,6 +32,7 @@ const main = async () => {
     entities: Entities,
   });
   // await conn.runMigrations();
+  sgMail.setApiKey(SENDGRID_KEY);
   const app = express();
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);

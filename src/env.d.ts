@@ -9,5 +9,8 @@ declare namespace NodeJS {
     AWS_SECRET_ACCESS_KEY: string;
     AWS_DEFAULT_REGION: string;
     COURSE_SESSION_BUCKETNAME: string;
+    SENDGRID_API_KEY: string;
+    TO_MAIL: string;
+    TO_NAME: string;
   }
 }

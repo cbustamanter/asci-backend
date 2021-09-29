@@ -14,6 +14,7 @@ import {
 import { getConnection, getRepository, In } from "typeorm";
 import { v4 } from "uuid";
 import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from "../constants";
+import { EmailController } from "../controllers/intranet/mail/EmailController";
 import { Course } from "../entities/Course";
 import { User } from "../entities/User";
 import { isAuth } from "../middlewares/isAuth";
@@ -23,7 +24,7 @@ import {
   LoginErrorMessageResponse,
 } from "../utils/ErrorMessageResponse";
 import { generateRandomPwd } from "../utils/generateRandomPwd";
-import { sendEmail } from "../utils/sendEmail";
+import { MailTmpl } from "../utils/templates/MailTmpl";
 import { ForgotPasswordResponse } from "../utils/types/ForgotPasswordResponse";
 import { PaginatedArgs } from "../utils/types/PaginatedArgs";
 import { PaginatedUsers } from "../utils/types/PaginatedUsers";
@@ -36,6 +37,7 @@ import { validateForgotPassword } from "../utils/validations/validateForgotPassw
 export class UserResolver {
   private repo = getRepository(User);
   private courseRepo = getRepository(Course);
+  private mailSender = new EmailController();
 
   @FieldResolver(() => String)
   genderText(@Root() user: User) {
@@ -79,7 +81,12 @@ export class UserResolver {
         country: input.country,
       }).save();
       user = result;
-      sendEmail(user.email, `Bienvenido, tu contraseña es <b>${randomPwd}</b>`);
+      const msg = MailTmpl(
+        user.email,
+        "Bienvenido a ASCI",
+        `Bienvenido, tu contraseña es <b>${randomPwd}</b>`
+      );
+      await this.mailSender.sendEmail(msg);
     } catch (err) {
       if (err.code === "23505") {
         return EmailTakenResponse();
@@ -283,11 +290,12 @@ export class UserResolver {
       "ex",
       1000 * 60 * 60 * 24 * 1 // 1 day
     );
-
-    sendEmail(
+    const msg = MailTmpl(
       email,
+      "Cambio de contraseña",
       `<a href="http://localhost:3090/change-password/${token}">Clic aquí para cambiar tu contraseña!</a>`
     );
+    await this.mailSender.sendEmail(msg);
     return { response };
   }
 
