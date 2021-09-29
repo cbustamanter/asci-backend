@@ -1,5 +1,5 @@
 import sgMail from "@sendgrid/mail";
-import { EmailService } from "../../../services/intranet/mainl/EmailService";
+import { EmailService } from "../../../services/intranet/mail/EmailService";
 
 export class EmailController implements EmailService {
   async sendEmail(msg: sgMail.MailDataRequired): Promise<boolean> {
