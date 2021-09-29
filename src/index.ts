@@ -23,15 +23,15 @@ import { MyContext } from "./types";
 import { Entities } from "./utils/Entities";
 
 const main = async () => {
-  await createConnection({
+  const conn = await createConnection({
     type: "postgres",
     url: process.env.DATABASE_URL,
-    synchronize: true,
+    // synchronize: true,
     logging: true,
     migrations: [path.join(__dirname, "./migrations/*")],
     entities: Entities,
   });
-  // await conn.runMigrations();
+  await conn.runMigrations();
   sgMail.setApiKey(SENDGRID_KEY);
   const app = express();
   const RedisStore = connectRedis(session);
@@ -55,7 +55,7 @@ const main = async () => {
         httpOnly: true,
         secure: __prod__,
         sameSite: "lax", //csrf
-        domain: __prod__ ? ".cbraggio.me" : undefined,
+        domain: __prod__ ? ".asciperu.com" : undefined,
       },
       secret: process.env.SESSION_SECRET,
       saveUninitialized: false,

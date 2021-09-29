@@ -13,7 +13,7 @@ import {
 } from "type-graphql";
 import { getConnection, getRepository, In } from "typeorm";
 import { v4 } from "uuid";
-import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from "../constants";
+import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX, WEB_URL } from "../constants";
 import { EmailController } from "../controllers/intranet/mail/EmailController";
 import { Course } from "../entities/Course";
 import { User } from "../entities/User";
@@ -293,7 +293,7 @@ export class UserResolver {
     const msg = MailTmpl(
       email,
       "Cambio de contraseña",
-      `<a href="http://localhost:3090/change-password/${token}">Clic aquí para cambiar tu contraseña!</a>`
+      `<a href="http://${WEB_URL}/change-password/${token}">Clic aquí para cambiar tu contraseña!</a>`
     );
     await this.mailSender.sendEmail(msg);
     return { response };

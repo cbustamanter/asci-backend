@@ -12,5 +12,14 @@ declare namespace NodeJS {
     SENDGRID_API_KEY: string;
     TO_MAIL: string;
     TO_NAME: string;
+    TYPEORM_CONNECTION: string;
+    TYPEORM_HOST: string;
+    TYPEORM_USERNAME: string;
+    TYPEORM_PASSWORD: string;
+    TYPEORM_DATABASE: string;
+    TYPEORM_PORT: string;
+    TYPEORM_LOGGING: string;
+    TYPEORM_ENTITIES: string;
+    TYPEORM_MIGRATIONS: string;
   }
 }

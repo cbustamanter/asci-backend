@@ -7,3 +7,4 @@ export const S3_SESSION_PATH = "/sessions";
 export const TO_EMAIL = process.env.TO_MAIL;
 export const TO_NAME = process.env.TO_NAME;
 export const SENDGRID_KEY = process.env.SENDGRID_API_KEY;
+export const WEB_URL = process.env.CORS_ORIGIN;
