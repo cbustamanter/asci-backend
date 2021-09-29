@@ -12,7 +12,6 @@ import {
 } from "type-graphql";
 import { CourseController } from "../../controllers/intranet/course/CourseController";
 import { Course } from "../../entities/Course";
-import { CourseDetail } from "../../entities/CourseDetail";
 import { CourseSession } from "../../entities/CourseSession";
 import { isAuth } from "../../middlewares/isAuth";
 

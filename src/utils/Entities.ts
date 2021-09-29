@@ -7,6 +7,7 @@ import { Question } from "../entities/Question";
 import { Quizz } from "../entities/Quizz";
 import { QuizzDetail } from "../entities/QuizzDetail";
 import { SessionFile } from "../entities/SessionFile";
+import { SolvedQuizz } from "../entities/SolvedQuizz";
 import { User } from "../entities/User";
 
 export const Entities = [
@@ -20,4 +21,5 @@ export const Entities = [
   Question,
   Answer,
   PerformedQuizz,
+  SolvedQuizz,
 ];

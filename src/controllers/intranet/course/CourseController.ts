@@ -11,6 +11,7 @@ export class CourseController implements CourseService {
       .createQueryBuilder("c")
       .select(userCourseSelect)
       .leftJoin("c.quizz", "q")
+      .leftJoin("q.performedQuizz", "pf")
       .leftJoin("q.quizzDetail", "qd")
       .leftJoin("c.courseDetail", "cd")
       .leftJoin("cd.courseSessions", "cs")

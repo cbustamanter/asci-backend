@@ -4,6 +4,7 @@ export const userCourseSelect = [
   "q.status",
   "qd.id",
   "qd.availableTime",
+  "qd.minScore",
   "cd.id",
   "cd.name",
   "cd.description",
@@ -18,4 +19,6 @@ export const userCourseSelect = [
   "f.id",
   "f.name",
   "f.filename",
+  "pf.id",
+  "pf.finalScore",
 ];
