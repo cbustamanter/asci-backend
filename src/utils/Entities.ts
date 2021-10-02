@@ -9,6 +9,7 @@ import { QuizzDetail } from "../entities/QuizzDetail";
 import { SessionFile } from "../entities/SessionFile";
 import { SolvedQuizz } from "../entities/SolvedQuizz";
 import { User } from "../entities/User";
+import { UserCertificate } from "../entities/UserCertificate";
 
 export const Entities = [
   User,
@@ -22,4 +23,5 @@ export const Entities = [
   Answer,
   PerformedQuizz,
   SolvedQuizz,
+  UserCertificate,
 ];

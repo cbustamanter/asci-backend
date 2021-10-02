@@ -1,6 +1,7 @@
 import {
   Arg,
   FieldResolver,
+  Int,
   Mutation,
   Query,
   Resolver,
@@ -22,6 +23,13 @@ export class QuizResolver {
   @FieldResolver(() => String)
   statusText(@Root() quizz: Quizz) {
     return quizz.status === 1 ? "Activo" : "Inactivo";
+  }
+
+  @FieldResolver(() => Int)
+  attemptsLeft(@Root() quizz: Quizz) {
+    const maxAttempts = 3;
+    const performedQuizzes = quizz.performedQuizz.length;
+    return maxAttempts - performedQuizzes;
   }
 
   @Mutation(() => Boolean)

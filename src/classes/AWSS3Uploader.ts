@@ -1,5 +1,6 @@
 import AWS from "aws-sdk";
 import { FileUpload } from "graphql-upload";
+import internal from "stream";
 import stream from "stream";
 import { v4 } from "uuid";
 import { IUploader } from "../interfaces/IUploader";
@@ -44,6 +45,13 @@ export class AWSS3Uploader implements IUploader {
 
   private createDestinationFilePath(fileName: string): string {
     return `${v4()}-${fileName}`;
+  }
+
+  async generatePdf(fileName: string, stream: internal.Readable) {
+    const uploadStream = this.createUploadStream(fileName, "application/pdf");
+    stream.pipe(uploadStream.writeStream);
+    const uploaded = await uploadStream.promise;
+    return uploaded;
   }
 
   async singleUpload(file: Promise<FileUpload>): Promise<UploadedFileResponse> {

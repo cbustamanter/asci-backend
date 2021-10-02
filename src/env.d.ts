@@ -12,6 +12,8 @@ declare namespace NodeJS {
     SENDGRID_API_KEY: string;
     TO_MAIL: string;
     TO_NAME: string;
+    ENV: string;
+    S3_URL: string;
     TYPEORM_CONNECTION: string;
     TYPEORM_HOST: string;
     TYPEORM_USERNAME: string;

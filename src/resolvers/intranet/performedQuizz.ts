@@ -2,7 +2,6 @@ import {
   Arg,
   Ctx,
   FieldResolver,
-  Int,
   Mutation,
   Query,
   Resolver,
@@ -11,21 +10,20 @@ import {
 } from "type-graphql";
 import { PerformedQuizzController } from "../../controllers/intranet/quizz/PerformedQuizzController";
 import { PerformedQuizz } from "../../entities/PerformedQuizz";
-import { Quizz } from "../../entities/Quizz";
 import { isAuth } from "../../middlewares/isAuth";
 import { MyContext } from "../../types";
 import { InputSolvequizz } from "../../utils/types/InputSolveQuizz";
 import { QuizzResult } from "../../utils/types/QuizzResult";
 
-@Resolver(Quizz)
+@Resolver(PerformedQuizz)
 export class PerformedQuizzResolver {
   private oPerformedQuizz = new PerformedQuizzController();
 
-  @FieldResolver(() => Int)
-  attemptsLeft(@Root() quizz: Quizz) {
-    const maxAttempts = 3;
-    const performedQuizzes = quizz.performedQuizz.length;
-    return maxAttempts - performedQuizzes;
+  @FieldResolver(() => String, { nullable: true })
+  certificateUrl(
+    @Root() performedQuizz: PerformedQuizz
+  ): Promise<string | undefined> {
+    return this.oPerformedQuizz.hasCertificate(performedQuizz.id);
   }
   @UseMiddleware(isAuth)
   @Mutation(() => PerformedQuizz)

@@ -14,6 +14,7 @@ import { createConnection } from "typeorm";
 import { COOKIE_NAME, SENDGRID_KEY, __prod__ } from "./constants";
 import { isAdmChecker } from "./middlewares/isAdm";
 import { CourseResolver } from "./resolvers/course";
+import { CertificateResolver } from "./resolvers/intranet/certificate/certificate";
 import { IntranetCourseResolver } from "./resolvers/intranet/course";
 import { IntranetSessionResolver } from "./resolvers/intranet/courseSession";
 import { PerformedQuizzResolver } from "./resolvers/intranet/performedQuizz";
@@ -73,6 +74,7 @@ const main = async () => {
         IntranetCourseResolver,
         IntranetSessionResolver,
         PerformedQuizzResolver,
+        CertificateResolver,
       ],
       validate: false,
       authChecker: isAdmChecker,

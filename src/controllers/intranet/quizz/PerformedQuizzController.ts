@@ -1,8 +1,10 @@
 import moment from "moment";
 import { getRepository } from "typeorm";
+import { S3_PDF_PATH, S3_URL } from "../../../constants";
 import { PerformedQuizz } from "../../../entities/PerformedQuizz";
 import { Quizz } from "../../../entities/Quizz";
 import { SolvedQuizz } from "../../../entities/SolvedQuizz";
+import { UserCertificate } from "../../../entities/UserCertificate";
 import { PerformedQuizzService } from "../../../services/intranet/quizz/PerformedQuizzService";
 import { MyContext } from "../../../types";
 import { InputSolvequizz } from "../../../utils/types/InputSolveQuizz";
@@ -12,12 +14,18 @@ export class PerformedQuizzController implements PerformedQuizzService {
   private repo = getRepository(PerformedQuizz);
   private quizz = getRepository(Quizz);
   private solvedQuizz = getRepository(SolvedQuizz);
+  private certificate = getRepository(UserCertificate);
 
   async performQuizz(userId: string, quizzId: string): Promise<PerformedQuizz> {
     const quizz = await this.quizz.findOneOrFail(
       { id: quizzId },
       { relations: ["quizzDetail"] }
     );
+    await this.repo.update(
+      { user: { id: userId }, quizz: { id: quizzId } },
+      { status: 2 }
+    );
+
     const expirationDate = moment()
       .add(quizz.quizzDetail.timeToComplete, "minutes")
       .toDate();
@@ -31,11 +39,27 @@ export class PerformedQuizzController implements PerformedQuizzService {
     const result = await this.repowithRelations
       .where("p.id = :id", { id })
       .getOneOrFail();
-    // const now = moment().toDate();
-    // if (now > result.expirationDate) {
-    //   throw new Error("Quizz has expired!");
-    // }
+    const now = moment().toDate();
+    if (now > result.expirationDate && result.status == 1) {
+      result.status = 2;
+      await result.save();
+      throw new Error("reload");
+    }
     return result;
+  }
+  async hasCertificate(id: string): Promise<string | undefined> {
+    const {
+      user,
+      quizz: { course },
+    } = await this.repo.findOneOrFail(
+      { id },
+      { relations: ["quizz", "quizz.course", "user"] }
+    );
+    const result = await this.certificate.findOne({ user, course });
+    if (!result) {
+      return;
+    }
+    return `${S3_URL}${S3_PDF_PATH}/${result.id}.pdf`;
   }
   async solveQuizz(
     id: string,
