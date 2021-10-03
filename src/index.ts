@@ -33,6 +33,7 @@ const main = async () => {
     entities: Entities,
   });
   await conn.runMigrations();
+  console.log(`CORS`, process.env.CORS_ORIGIN);
   sgMail.setApiKey(SENDGRID_KEY);
   const app = express();
   const RedisStore = connectRedis(session);
