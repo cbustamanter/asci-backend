@@ -12,7 +12,7 @@ COPY yarn.lock ./
 RUN yarn
 
 COPY . .
-COPY .env.production .env
+COPY .env
 
 RUN yarn build
 
