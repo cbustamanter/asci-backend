@@ -8,7 +8,6 @@ jobs:
       - run:
           name: Setup VirtualEnv
           command: |
-            TAG='0.1.${CIRCLE_BUILD_NUM}'
             echo 'DATABASE_URL=$DATABASE_URL' >> .env
             echo 'REDIS_URL=$REDIS_URL' >> .env
             echo 'PORT=$PORT' >> .env
@@ -35,6 +34,7 @@ jobs:
       - run:
           name: Build and push Docker image
           command: |
-            docker build -t asciperu/$IMAGE_NAME:8 .
+            TAG='0.1.${CIRCLE_BUILD_NUM}'
+            docker build -t asciperu/$IMAGE_NAME:$TAG .
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push asciperu/$IMAGE_NAME:8
+            docker push asciperu/$IMAGE_NAME:$TAG
