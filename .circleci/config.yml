@@ -5,6 +5,9 @@ jobs:
       - image: circleci/node:16.10
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "bc:d2:5e:7f:09:af:26:fd:7c:3b:64:d3:7f:ac:da:69"
       - run:
           name: Setup VirtualEnv
           command: |
