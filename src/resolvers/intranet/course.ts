@@ -1,6 +1,7 @@
 import moment from "moment";
 import {
   Arg,
+  Ctx,
   Field,
   Int,
   ObjectType,
@@ -11,6 +12,7 @@ import {
 import { CourseController } from "../../controllers/intranet/course/CourseController";
 import { Course } from "../../entities/Course";
 import { isAuth } from "../../middlewares/isAuth";
+import { MyContext } from "../../types";
 
 @ObjectType()
 export class SessionStatus {
@@ -27,7 +29,10 @@ export class IntranetCourseResolver {
 
   @UseMiddleware(isAuth)
   @Query(() => Course)
-  async userCourse(@Arg("courseId") courseId: string): Promise<Course> {
-    return this.oCourse.course(courseId);
+  async userCourse(
+    @Arg("courseId") courseId: string,
+    @Ctx() ctx: MyContext
+  ): Promise<Course> {
+    return this.oCourse.course(courseId, ctx);
   }
 }

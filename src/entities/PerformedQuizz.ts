@@ -22,7 +22,7 @@ export class PerformedQuizz extends EntityWithBase(
   @JoinColumn()
   quizz: Quizz;
 
-  @Field(() => User)
+  @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.performedQuizz)
   user: User;
 

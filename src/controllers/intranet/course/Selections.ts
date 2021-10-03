@@ -21,4 +21,5 @@ export const userCourseSelect = [
   "f.filename",
   "pf.id",
   "pf.finalScore",
+  "pf.userId",
 ];
