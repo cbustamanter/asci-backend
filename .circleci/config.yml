@@ -16,6 +16,7 @@ jobs:
             echo 'PORT=$PORT' >> .env
             echo 'SESSION_SECRET=$SESSION_SECRET' >> .env
             echo 'CORS_ORIGIN=$CORS_ORIGIN' >> .env
+            echo $CORS_ORIGIN
             echo 'AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID' >> .env
             echo 'AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY' >> .env
             echo 'AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION' >> .env
