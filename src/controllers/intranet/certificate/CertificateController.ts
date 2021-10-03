@@ -42,7 +42,10 @@ export class CertificateController implements CertificateService {
       courseEndDate: result[0].cd_endDate,
       totalSessions: result.length + 1,
     });
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--use-gl=egl"],
+    });
     const page = await browser.newPage();
     await page.setContent(tmpl);
     await page.emulateMediaType("screen");
