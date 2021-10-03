@@ -39,3 +39,7 @@ jobs:
             docker build -t asciperu/$IMAGE_NAME:$TAG .
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
             docker push asciperu/$IMAGE_NAME:$TAG
+      - run:
+          name: Deploy app to Digital Ocean Server via Docker
+          command: |
+            ssh -o StrictHostKeyChecking=no root@$VPS "docker pull asciperu/$IMAGE_NAME:$TAG && docker tag asciperu/$IMAGE_NAME:$TAG dokku/api:$VERSION && dokku deploy api $VERSION"
