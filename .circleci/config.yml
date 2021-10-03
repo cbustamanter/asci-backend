@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          docker_layer_caching: false
+          version: 19.03.13
       - run:
           name: Build and push Docker image
           command: |            
