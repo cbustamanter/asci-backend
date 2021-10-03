@@ -42,4 +42,4 @@ jobs:
       - run:
           name: Deploy app to Digital Ocean Server via Docker
           command: |
-            ssh -o StrictHostKeyChecking=no root@$VPS "docker pull asciperu/$IMAGE_NAME:$TAG && docker tag asciperu/$IMAGE_NAME:$TAG dokku/api:$VERSION && dokku deploy api $VERSION"
+            ssh -o StrictHostKeyChecking=no root@$VPS "docker pull asciperu/$IMAGE_NAME:$TAG && docker tag asciperu/$IMAGE_NAME:$TAG dokku/api:$TAG && dokku tags:deploy api $TAG"
