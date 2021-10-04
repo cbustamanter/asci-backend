@@ -32,7 +32,7 @@ export class User extends EntityWithDates(EntityWithBase(BaseEntity)) {
 
   @Field(() => Int)
   @Column({ type: "smallint", default: 1 })
-  status: number; // 0: inactive || 1: active
+  status: number; //  1: active || 2:inactive
 
   @Field(() => Int)
   @Column({ type: "smallint", default: 1 })

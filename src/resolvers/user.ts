@@ -165,7 +165,7 @@ export class UserResolver {
       .take(take)
       .skip(skip);
 
-    if (args.status && args.status !== 0) {
+    if (args.status) {
       qb.andWhere("u.status = :status", { status: args.status });
     }
     if (args.search) {
