@@ -9,10 +9,17 @@ export const MailTmpl = (to: string, subject: string, body: string) => {
     },
     subject,
     html: `
-    	<!doctype html>	    
-		<body>
-		${body}
-		</body>
-	</html>`,
+    	<!doctype html>	
+        <head>
+          <style>
+            ul.tick {
+              list-style: none;
+            }
+          </style>
+        <head>
+        <body>
+        ${body}
+        </body>
+	    </html>`,
   };
 };

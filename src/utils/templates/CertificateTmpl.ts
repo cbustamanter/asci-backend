@@ -24,20 +24,20 @@ export const CertificateTmpl = (content: CertificateContent): string => {
           <div style="position:absolute;top:23%;left:23%">
             <h3 style="font-family: Arial, Helvetica, sans-serif; font-weight:300;">Otorgado a:</h3>    
           </div>
-          <div style="position:absolute;top:28%;left:30%;text-align:center;max-width:80%;height:110px;">
+          <div style="position:absolute;top:28%;left:23%;text-align:center;width:70%;height:110px;display:flex;justify-content:center;align-items:center;">
             <h1 style="font-family: Helvetica,sans-serif; font-size:40px; font-weight:800;">${content.studentName}</h1>
           </div>  
           <div style="position:absolute;top:40%;left:23%">
             <h3 style="font-family: Arial, Helvetica, sans-serif; font-weight:300;">Por haber participado en el Curso de Especialización Profesional:</h3>    
           </div>
-          <div style="position:absolute;top:46%;left:27%;max-width:60%;text-align:center;height:130px;">
+          <div style="position:absolute;top:46%;left:23%;width:70%;text-align:center;height:130px;display:flex;justify-content:center;align-items:center;">
             <h1 style="font-family: 'Lucida Console',monospace; font-weight:bolder;">"${content.courseName}"</h1>    
           </div>
           <div style="position:absolute;top:60%;left:23%;max-width:70%">
-            <h3 style="font-family: Arial, Helvetica, sans-serif; font-weight:300;">En honor a su parcipación con distinción en el curso, organizado por ASCI Perú y realizado durante ${startDate} y ${endDate} (${content.totalSessions} clase(s) en total).</h3>
+            <h3 style="font-family: Arial, Helvetica, sans-serif; font-weight:300;">En honor a su participación con distinción en este curso organizado por ASCI Perú y realizado durante el ${startDate} y ${endDate}, ${content.totalSessions} clase(s) en total.</h3>
           </div>
           <div style="position:absolute;top:67%;left:70%">
-            <h3 style="font-family: Arial, Helvetica, sans-serif; font-weight:300;">Piura, ${now}</h3>
+            <h3 style="font-family: Arial, Helvetica, sans-serif; font-weight:300;">Lima, ${now}</h3>
           </div>
         </div>
       </body>

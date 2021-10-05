@@ -13,7 +13,16 @@ import {
 } from "type-graphql";
 import { getConnection, getRepository, In } from "typeorm";
 import { v4 } from "uuid";
-import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX, WEB_URL } from "../constants";
+import {
+  COOKIE_NAME,
+  FB_URL,
+  FORGOT_PASSWORD_PREFIX,
+  LINKEDIN_URL,
+  TELEGRAM_URL,
+  WEB_URL,
+  WSP_NMB,
+  YT_URL,
+} from "../constants";
 import { EmailController } from "../controllers/intranet/mail/EmailController";
 import { Course } from "../entities/Course";
 import { User } from "../entities/User";
@@ -83,8 +92,23 @@ export class UserResolver {
       user = result;
       const msg = MailTmpl(
         user.email,
-        "Bienvenido a ASCI",
-        `Bienvenido, tu contraseña es <b>${randomPwd}</b>`
+        "¡Bienvenido al aula virtual de ASCI Perú!",
+        `<b>¡Gracias por confiar en ASCI Perú!</b><br>
+        Bienvenido al aula virtual, te brindamos tu acceso:
+        <ul>
+          <li>Usuario: tu dirección correo electrónico</li>
+          <li>Contraseña: ${randomPwd}</li>
+        </ul>
+        Por tu seguridad, no compartas tu acceso con nadie.
+        <ul class="tick">
+          <li>&#x2713; Dale me gusta a nuestra página de Facebook: <a href="${FB_URL}" target="_blank">${FB_URL}</a></li>
+          <li>&#x2713; Síguenos en LinkedIn: <a href="${LINKEDIN_URL}" target="_blank">${LINKEDIN_URL}</a></li>
+          <li>&#x2713; Suscríbete a nuestro canal de Youtube: <a href="${YT_URL}" target="_blank">${YT_URL}</a></li>
+          <li>&#x2713; Agrega nuestro número de whatsapp: ${WSP_NMB}</li>
+          <li>&#x2713; Únete a nuestro canal de Telegram: <a href="${TELEGRAM_URL}" target="_blank">${TELEGRAM_URL}</a></li>
+        </ul>
+        <i>ASCI Perú, compartimos más que conocimiento.</i>
+        `
       );
       await this.mailSender.sendEmail(msg);
     } catch (err) {
@@ -206,6 +230,7 @@ export class UserResolver {
       //   "u.names LIKE :arg OR u.surnames like :arg OR u.email like :arg ",
       //   { arg: `%${arg}%` }
       // )
+      .where("u.role = 1")
       .andWhere((qb) => {
         const subQuery = qb
           .subQuery()
@@ -213,9 +238,11 @@ export class UserResolver {
           .from(User, "u")
           .leftJoin("u.courses", "c")
           .where("c_u.courseId = :courseId", { courseId })
+          .orderBy("u.names", "ASC")
           .getQuery();
         return "u.id NOT IN " + subQuery;
       })
+      .orderBy("LOWER(u.names)", "ASC")
       .getMany();
 
     return result;

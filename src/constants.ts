@@ -12,3 +12,10 @@ export const SENDGRID_KEY = process.env.SENDGRID_API_KEY;
 export const WEB_URL = process.env.CORS_ORIGIN;
 export const ENV = process.env.ENV;
 export const S3_URL = process.env.S3_URL;
+export const FB_URL =
+  "https://www.facebook.com/ASCI-Per%C3%BA-Asesor%C3%ADa-Consultor%C3%ADa-e-Investigaci%C3%B3n-111100243896427";
+export const LINKEDIN_URL = "https://www.linkedin.com/company/65478132/admin/";
+export const YT_URL =
+  "https://www.youtube.com/channel/UC3YDqzRDAq5l6V9tTZKLB5A";
+export const WSP_NMB = "+51946628729";
+export const TELEGRAM_URL = "https://t.me/ASCIPERU";
