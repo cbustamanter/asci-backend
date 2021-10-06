@@ -98,6 +98,7 @@ export class UserResolver {
         <ul>
           <li>Usuario: tu dirección correo electrónico</li>
           <li>Contraseña: ${randomPwd}</li>
+          <li>Intranet: <a href="${WEB_URL}" target="_blank">${WEB_URL}</a></li>
         </ul>
         Por tu seguridad, no compartas tu acceso con nadie.
         <ul class="tick">

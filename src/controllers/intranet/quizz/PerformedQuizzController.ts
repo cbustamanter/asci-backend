@@ -1,5 +1,5 @@
 import moment from "moment";
-import { getRepository } from "typeorm";
+import { getRepository, MoreThanOrEqual } from "typeorm";
 import { S3_PDF_PATH, S3_URL } from "../../../constants";
 import { PerformedQuizz } from "../../../entities/PerformedQuizz";
 import { Quizz } from "../../../entities/Quizz";
@@ -47,7 +47,7 @@ export class PerformedQuizzController implements PerformedQuizzService {
     }
     return result;
   }
-  async hasCertificate(id: string): Promise<string | undefined> {
+  async certificateUrl(id: string): Promise<string | undefined> {
     const {
       user,
       quizz: { course },
@@ -60,6 +60,18 @@ export class PerformedQuizzController implements PerformedQuizzService {
       return;
     }
     return `${S3_URL}${S3_PDF_PATH}/${result.id}.pdf`;
+  }
+  async hasAnyApproved(id: string): Promise<boolean> {
+    const pq = await this.repowithRelations
+      .leftJoinAndSelect("p.user", "u")
+      .where("p.id = :id", { id })
+      .getOneOrFail();
+    const count = await this.repo.count({
+      user: { id: pq.user.id },
+      quizz: { id: pq.quizz.id },
+      finalScore: MoreThanOrEqual(pq.quizz.quizzDetail.minScore),
+    });
+    return !!count;
   }
   async solveQuizz(
     id: string,

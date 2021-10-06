@@ -21,7 +21,7 @@ export class IntranetSessionResolver {
     const now = new Date();
     const startDate = session.startTime;
     let status = 4;
-    let text = moment(startDate.toISOString()).format("dddd HH:ss");
+    let text = moment(startDate.toISOString()).format("dddd HH:mm");
     if (now > startDate) {
       status = 1;
       text = "Finalizada";

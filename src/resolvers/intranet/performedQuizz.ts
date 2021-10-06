@@ -23,8 +23,14 @@ export class PerformedQuizzResolver {
   certificateUrl(
     @Root() performedQuizz: PerformedQuizz
   ): Promise<string | undefined> {
-    return this.oPerformedQuizz.hasCertificate(performedQuizz.id);
+    return this.oPerformedQuizz.certificateUrl(performedQuizz.id);
   }
+
+  @FieldResolver(() => Boolean)
+  hasAnyApproved(@Root() performedQuizz: PerformedQuizz): Promise<boolean> {
+    return this.oPerformedQuizz.hasAnyApproved(performedQuizz.id);
+  }
+
   @UseMiddleware(isAuth)
   @Mutation(() => PerformedQuizz)
   async performQuizz(

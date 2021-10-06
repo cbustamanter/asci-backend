@@ -230,7 +230,7 @@ export class CourseResolver {
       .getOne();
   }
 
-  repoWithRelations() {
+  private repoWithRelations() {
     return this.repo
       .createQueryBuilder("c")
       .leftJoinAndSelect("c.users", "u")

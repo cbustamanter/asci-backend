@@ -12,4 +12,6 @@ export interface PerformedQuizzService {
     { req }: MyContext
   ) => Promise<QuizzResult>;
   userQuizzes: ({ req }: MyContext) => Promise<PerformedQuizz[]>;
+  certificateUrl: (id: string) => Promise<string | undefined>;
+  hasAnyApproved: (id: string) => Promise<boolean>;
 }

@@ -8,8 +8,7 @@ export class CourseController implements CourseService {
   private courseRepo = getRepository(Course);
 
   async course(courseId: String, { req }: MyContext): Promise<Course> {
-    console.log(`probando aca`, req.session.userId);
-    const result = await this.courseRepo
+    return await this.courseRepo
       .createQueryBuilder("c")
       .select(userCourseSelect)
       .leftJoin("c.quizz", "q")
@@ -23,6 +22,5 @@ export class CourseController implements CourseService {
       .where("c.id = :id", { id: courseId })
       .orderBy("cs.createdAt", "ASC")
       .getOneOrFail();
-    return result;
   }
 }

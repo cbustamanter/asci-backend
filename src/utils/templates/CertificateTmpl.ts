@@ -1,7 +1,7 @@
 import moment from "moment";
 import { S3_PUBLIC, S3_URL } from "../../constants";
 
-interface CertificateContent {
+export interface CertificateContent {
   studentName: string;
   courseName: string;
   courseStartDate: Date;
