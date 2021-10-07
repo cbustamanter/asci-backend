@@ -25,6 +25,9 @@ export class IntranetSessionResolver {
       status = 1;
       text = "Finalizada";
     }
+    console.log(`now`, now);
+    console.log(`startDate`, startDate);
+
     if (now.getDate() == startDate.getDate()) {
       //  if its on session start date and now time
       if (now.getTime() > startDate.getTime()) {

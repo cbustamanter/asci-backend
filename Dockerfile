@@ -18,6 +18,9 @@ COPY .env .env
 
 RUN yarn build
 
+ENV TZ=America/Lima
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 ENV NODE_ENV production
 
 EXPOSE 8080
