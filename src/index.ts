@@ -3,7 +3,7 @@ import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
 import cors from "cors";
 import "dotenv-safe/config";
-import express from "express";
+import express, { RequestHandler } from "express";
 import session from "express-session";
 import { graphqlUploadExpress } from "graphql-upload";
 import Redis from "ioredis";
@@ -35,6 +35,7 @@ const main = async () => {
   await conn.runMigrations();
   sgMail.setApiKey(SENDGRID_KEY);
   const app = express();
+  app.use(express.json({ limit: "500MB" }) as RequestHandler);
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
   app.set("trust proxy", 1);
@@ -83,16 +84,12 @@ const main = async () => {
       req,
       res,
       redis,
-      //   userLoader: createUserLoader(),
-      //   updootLoader: createUpdootLoader(),
     }),
   });
   apolloServer.applyMiddleware({
     app,
     cors: false,
-    bodyParserConfig: {
-      limit: "500mb",
-    },
+    bodyParserConfig: false,
   });
   app.listen(parseInt(process.env.PORT), () => {
     console.log(`server started on port ${process.env.PORT}`);
