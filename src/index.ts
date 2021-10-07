@@ -90,6 +90,9 @@ const main = async () => {
   apolloServer.applyMiddleware({
     app,
     cors: false,
+    bodyParserConfig: {
+      limit: "500mb",
+    },
   });
   app.listen(parseInt(process.env.PORT), () => {
     console.log(`server started on port ${process.env.PORT}`);
