@@ -321,7 +321,7 @@ export class UserResolver {
     const msg = MailTmpl(
       email,
       "Cambio de contraseña",
-      `<a href="http://${WEB_URL}/change-password/${token}">Clic aquí para cambiar tu contraseña!</a>`
+      `<a href="${WEB_URL}/change-password/${token}">Clic aquí para cambiar tu contraseña!</a>`
     );
     await this.mailSender.sendEmail(msg);
     return { response };
