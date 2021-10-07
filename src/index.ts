@@ -35,7 +35,7 @@ const main = async () => {
   await conn.runMigrations();
   sgMail.setApiKey(SENDGRID_KEY);
   const app = express();
-  app.use(express.json({ limit: "500MB" }) as RequestHandler);
+  app.use(express.json({ limit: 524288000 }) as RequestHandler);
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
   app.set("trust proxy", 1);
