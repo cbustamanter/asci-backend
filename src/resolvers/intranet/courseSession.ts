@@ -20,7 +20,8 @@ export class IntranetSessionResolver {
     const now = new Date();
     const startDate = session.startTime;
     let status = 4;
-    let text = startDate.toISOString();
+    // let text = startDate.toISOString();
+    let text = "";
     if (now > startDate) {
       status = 1;
       text = "Finalizada";
