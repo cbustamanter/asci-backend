@@ -1,3 +1,4 @@
+import moment from "moment";
 import {
   Arg,
   FieldResolver,
@@ -20,8 +21,7 @@ export class IntranetSessionResolver {
     const now = new Date();
     const startDate = session.startTime;
     let status = 4;
-    // let text = moment(startDate).format("dddd HH:mm");
-    let text = "";
+    let text = moment(startDate).subtract(5, "hours").format("dddd HH:mm"); // TO GMT -5 (PERU)
     if (now > startDate) {
       status = 1;
       text = "Finalizada";
