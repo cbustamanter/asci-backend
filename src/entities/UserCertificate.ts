@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import { BaseEntity, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { Course } from "./Course";
 import { EntityWithBase, EntityWithDates } from "./mixins/EntityManager";
 import { User } from "./User";
