@@ -1,5 +1,6 @@
 import {
   Arg,
+  Ctx,
   FieldResolver,
   Int,
   Mutation,
@@ -8,8 +9,10 @@ import {
   Root,
 } from "type-graphql";
 import { getRepository } from "typeorm";
+import { PerformedQuizz } from "../entities/PerformedQuizz";
 import { Quizz } from "../entities/Quizz";
 import { QuizzDetail } from "../entities/QuizzDetail";
+import { MyContext } from "../types";
 import { InputQuizz } from "../utils/types/InputQuizz";
 import { PaginatedArgs } from "../utils/types/PaginatedArgs";
 import { PaginatedQuizzes } from "../utils/types/PaginatedQuizzes";
@@ -19,6 +22,7 @@ import { PaginatedQuizzes } from "../utils/types/PaginatedQuizzes";
 export class QuizResolver {
   private repo = getRepository(Quizz);
   private quizzDetailrepo = getRepository(QuizzDetail);
+  private performedQuizz = getRepository(PerformedQuizz);
 
   @FieldResolver(() => String)
   statusText(@Root() quizz: Quizz) {
@@ -26,10 +30,12 @@ export class QuizResolver {
   }
 
   @FieldResolver(() => Int)
-  attemptsLeft(@Root() quizz: Quizz) {
+  async attemptsLeft(@Root() quizz: Quizz, @Ctx() { req }: MyContext) {
+    const attempts = await this.performedQuizz.count({
+      where: { user: { id: req.session.userId }, quizz: { id: quizz.id } },
+    });
     const maxAttempts = 3;
-    const performedQuizzes = quizz.performedQuizz.length;
-    return maxAttempts - performedQuizzes;
+    return maxAttempts - attempts;
   }
 
   @Mutation(() => Boolean)

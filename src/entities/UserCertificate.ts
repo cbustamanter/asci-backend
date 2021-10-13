@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, JoinColumn, OneToOne } from "typeorm";
+import { BaseEntity, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { Course } from "./Course";
 import { EntityWithBase, EntityWithDates } from "./mixins/EntityManager";
 import { User } from "./User";
@@ -7,11 +7,11 @@ import { User } from "./User";
 export class UserCertificate extends EntityWithBase(
   EntityWithDates(BaseEntity)
 ) {
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn()
   user: User;
 
-  @OneToOne(() => Course)
+  @ManyToOne(() => Course)
   @JoinColumn()
   course: Course;
 }
