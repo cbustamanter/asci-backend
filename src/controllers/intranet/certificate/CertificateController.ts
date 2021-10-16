@@ -108,8 +108,8 @@ export class CertificateController implements CertificateService {
     await page.setContent(tmpl);
     await page.emulateMediaType("screen");
     const stream = await page.createPDFStream({
-      height: 810,
-      width: 1162,
+      height: "1132px",
+      width: "779px",
       landscape: true,
       printBackground: true,
     });
