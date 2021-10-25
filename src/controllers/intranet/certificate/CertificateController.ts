@@ -46,7 +46,7 @@ export class CertificateController implements CertificateService {
       courseName: course.courseDetail.name,
       courseStartDate: course.courseDetail.startDate,
       courseEndDate: course.courseDetail.endDate,
-      totalSessions: course.courseDetail.courseSessions.length + 1,
+      totalSessions: course.courseDetail.courseSessions.length,
     });
     return await this.createPdf(tmpl, certificate.id);
   }
@@ -84,7 +84,7 @@ export class CertificateController implements CertificateService {
       courseName: result[0].cd_name,
       courseStartDate: result[0].cd_startDate,
       courseEndDate: result[0].cd_endDate,
-      totalSessions: result.length + 1,
+      totalSessions: result.length,
     });
     return await this.createPdf(tmpl, certificate.id);
   }
