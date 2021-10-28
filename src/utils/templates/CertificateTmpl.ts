@@ -39,7 +39,7 @@ export const CertificateTmpl = (content: CertificateContent): string => {
           <h1 style="font-family: 'Lucida Console',monospace; font-weight:bolder;">"${content.courseName}"</h1>    
         </div>
         <div style="position:absolute;top:60%;left:23%;max-width:70%">
-          <h3 style="font-family: Arial, Helvetica, sans-serif; font-weight:300;">En honor a su participación con distinción en este curso organizado por ASCI Perú y realizado durante el ${startDate} y ${endDate}, ${content.totalSessions} clase(s) en total.</h3>
+          <h3 style="font-family: Arial, Helvetica, sans-serif; font-weight:300;">En honor a su participación con distinción en este curso organizado por ASCI Perú y realizado durante el ${startDate} y ${endDate}, ${content.totalSessions} clase(s) con 24 horas lectivas en total.</h3>
         </div>
         <div style="position:absolute;top:67%;left:70%">
           <h3 style="font-family: Arial, Helvetica, sans-serif; font-weight:300;">Lima, ${now}</h3>
