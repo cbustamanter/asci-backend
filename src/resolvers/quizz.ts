@@ -35,7 +35,8 @@ export class QuizResolver {
       where: { user: { id: req.session.userId }, quizz: { id: quizz.id } },
     });
     const maxAttempts = 3;
-    return maxAttempts - attempts;
+    const result = maxAttempts - attempts;
+    return result >= 0 ? result : 0;
   }
 
   @Mutation(() => Boolean)
